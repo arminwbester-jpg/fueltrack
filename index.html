@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171321">
+  <meta name="description" content="A simple meal and nutrition diary.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <title>FuelTrack — Food Diary</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101116;--panel:#1d202a;--panel2:#242333;--purple:#4b3291;--purple2:#927cff;--muted:#a9a9b7;--line:#343744;--green:#70e6a2;--blue:#83bfff;--yellow:#ffd36b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f6f5fb;font:16px system-ui,-apple-system,Segoe UI,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    .app{max-width:620px;margin:auto;padding:18px 16px 100px}.top{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 20px}.eyebrow{font-size:12px;letter-spacing:1.4px;color:#bcb3e8}.top h1{font-size:27px;margin:2px 0}.date{color:var(--muted);font-size:14px}
+    .hero{background:linear-gradient(140deg,#563b9e,#3e2b7a);border-radius:25px;padding:21px;margin-bottom:14px;box-shadow:0 10px 28px #0004}.hero-head{display:flex;justify-content:space-between;align-items:center}.hero h2{font-size:20px;margin:0}.calories{font-size:42px;font-weight:800;margin:12px 0 0;letter-spacing:-1px}.sub{font-size:13px;color:#e0d9f5}.macro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.macro{background:#ffffff14;border-radius:14px;padding:11px}.macro small{display:block;color:#e3def5}.macro b{font-size:21px}.p{color:var(--green)}.c{color:var(--blue)}.f{color:var(--yellow)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:21px;padding:17px;margin:14px 0}.card h2{font-size:19px;margin:0 0 13px}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.muted{color:var(--muted)}.btn{border:0;border-radius:14px;background:var(--purple2);color:#171321;font-weight:750;padding:13px 16px;font-size:15px;cursor:pointer}.btn.secondary{background:#343044;color:#eee9ff;border:1px solid #51486d}.btn.full{width:100%}.btn:disabled{opacity:.45}
+    .meal-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.meal-tab{border:1px solid var(--line);background:#20212b;color:#ddd;border-radius:12px;padding:10px 4px;font-size:13px}.meal-tab.active{background:#49358c;border-color:#8d78e5;color:white}
+    label{font-size:13px;color:#c8c5d3;display:block;margin:11px 0 6px}input,select{width:100%;padding:13px;border:1px solid #414452;border-radius:12px;background:#151720;color:#fff;font:inherit;min-width:0}input[type=file]{padding:10px;font-size:13px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.photo{width:100%;max-height:230px;object-fit:cover;border-radius:14px;margin-top:10px;display:none}.hint{font-size:12px;line-height:1.45;color:var(--muted);margin:9px 0 0}.entry{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.entry strong{display:block}.entry small{color:var(--muted)}.entry-right{text-align:right;white-space:nowrap}.delete{border:0;background:transparent;color:#c2aaff;padding:6px;cursor:pointer}.empty{color:var(--muted);font-size:14px;padding:8px 0}.bottom{position:fixed;bottom:0;left:0;right:0;background:#171821ed;backdrop-filter:blur(12px);border-top:1px solid #343744;padding:11px 16px calc(11px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:32px}.bottom a{color:#b9b5c8;text-decoration:none;font-size:12px;text-align:center}.bottom span{display:block;font-size:21px}.notice{background:#29243c;border:1px solid #574b7b;padding:12px;border-radius:13px;color:#ddd5f5;font-size:13px;line-height:1.45}
+    @media(min-width:560px){.app{padding-top:28px}.hero{padding:26px}.calories{font-size:48px}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="top"><div><div class="eyebrow">YOUR DAILY NUTRITION</div><h1>FuelTrack</h1><div class="date" id="today"></div></div><div style="font-size:32px">🥗</div></header>
+  <section class="hero">
+    <div class="hero-head"><h2>Today's intake</h2><span>⚡</span></div>
+    <div class="calories"><span id="totalCal">0</span> <span style="font-size:17px;font-weight:500">kcal</span></div>
+    <div class="sub">Calories recorded today</div>
+    <div class="macro-grid">
+      <div class="macro"><small>Protein</small><b class="p"><span id="totalP">0</span> g</b></div>
+      <div class="macro"><small>Carbs</small><b class="c"><span id="totalC">0</span> g</b></div>
+      <div class="macro"><small>Fat</small><b class="f"><span id="totalF">0</span> g</b></div>
+    </div>
+  </section>
+
+  <section class="card" id="scanner">
+    <h2>📸 Scan a meal</h2>
+    <label for="photoInput">Take a photo or choose a meal photo</label>
+    <input id="photoInput" type="file" accept="image/*" capture="environment">
+    <img id="preview" class="photo" alt="Selected meal preview">
+    <p class="hint">Choose a clear photo showing the whole meal. This version lets you attach the photo and enter the nutrition estimate. Automatic AI food recognition is not connected yet, so it won't pretend to identify foods from the picture.</p>
+  </section>
+
+  <section class="card" id="add">
+    <h2>＋ Add food</h2>
+    <div class="meal-tabs" id="mealTabs">
+      <button class="meal-tab active" data-meal="Breakfast">Breakfast</button>
+      <button class="meal-tab" data-meal="Lunch">Lunch</button>
+      <button class="meal-tab" data-meal="Dinner">Dinner</button>
+      <button class="meal-tab" data-meal="Snack">Snack</button>
+    </div>
+    <form id="foodForm">
+      <label for="foodName">Food name</label><input id="foodName" required placeholder="e.g. Chicken, rice and vegetables">
+      <div class="fields">
+        <div><label for="cal">Calories (kcal)</label><input id="cal" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 520" required></div>
+        <div><label for="protein">Protein (g)</label><input id="protein" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 32" required></div>
+        <div><label for="carbs">Carbs (g)</label><input id="carbs" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 65" required></div>
+        <div><label for="fat">Fat (g)</label><input id="fat" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 14" required></div>
+      </div>
+      <button class="btn full" style="margin-top:16px" type="submit">Add to today's diary</button>
+    </form>
+  </section>
+
+  <section class="card" id="diary"><div class="row between"><h2 style="margin:0">Food diary</h2><span class="muted" id="foodCount">0 foods</span></div><div id="entries"><div class="empty">No foods added yet. Add your first meal above.</div></div></section>
+  <div class="notice">Nutrition values are estimates. For the best results, use food labels, measured portions or a trusted nutrition database. This app stores your diary on this device.</div>
+</main>
+<nav class="bottom"><a href="#scanner"><span>📷</span>Scan</a><a href="#add"><span>＋</span>Add food</a><a href="#diary"><span>📖</span>Diary</a></nav>
+<script>
+const $=id=>document.getElementById(id);
+const todayKey=()=>new Date().toLocaleDateString('en-CA');
+$('today').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+let selectedMeal='Breakfast', photoData='';
+let records={};
+try{records=JSON.parse(localStorage.getItem('fueltrack-records')||'{}')||{}}catch(e){records={}}
+const todayRecords=()=>records[todayKey()]||[];
+function save(){localStorage.setItem('fueltrack-records',JSON.stringify(records));render()}
+function render(){
+ const list=todayRecords(),sum=k=>list.reduce((a,x)=>a+(Number(x[k])||0),0);
+ $('totalCal').textContent=Math.round(sum('cal')).toLocaleString();
+ $('totalP').textContent=round(sum('protein'));$('totalC').textContent=round(sum('carbs'));$('totalF').textContent=round(sum('fat'));
+ $('foodCount').textContent=list.length+' food'+(list.length===1?'':'s');
+ const host=$('entries');host.innerHTML='';
+ if(!list.length){host.innerHTML='<div class="empty">No foods added yet. Add your first meal above.</div>';return}
+ ['Breakfast','Lunch','Dinner','Snack'].forEach(meal=>{
+   const group=list.filter(x=>x.meal===meal);if(!group.length)return;
+   const heading=document.createElement('div');heading.style.cssText='display:flex;justify-content:space-between;padding:15px 0 5px';heading.innerHTML='<strong>'+meal+'</strong><span class="muted">'+Math.round(group.reduce((s,x)=>s+x.cal,0))+' kcal</span>';host.appendChild(heading);
+   group.forEach(item=>{
+    const row=document.createElement('div');row.className='entry';
+    const left=document.createElement('div');const name=document.createElement('strong');name.textContent=item.name;const meta=document.createElement('small');meta.textContent=`P ${round(item.protein)}g · C ${round(item.carbs)}g · F ${round(item.fat)}g`;left.append(name,meta);
+    const right=document.createElement('div');right.className='entry-right';const kcal=document.createElement('strong');kcal.textContent=Math.round(item.cal)+' kcal';const del=document.createElement('button');del.className='delete';del.textContent='Remove';del.setAttribute('aria-label','Remove '+item.name);del.onclick=()=>{records[todayKey()]=todayRecords().filter(x=>x.id!==item.id);save()};right.append(kcal,del);row.append(left,right);host.appendChild(row);
+   });
+ });
+}
+function round(n){return Math.round(n*10)/10}
+document.querySelectorAll('.meal-tab').forEach(btn=>btn.addEventListener('click',()=>{selectedMeal=btn.dataset.meal;document.querySelectorAll('.meal-tab').forEach(b=>b.classList.toggle('active',b===btn))}));
+$('photoInput').addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!file.type.startsWith('image/')){alert('Please choose an image.');return}
+ const reader=new FileReader();reader.onload=()=>{photoData=reader.result;$('preview').src=photoData;$('preview').style.display='block'};reader.readAsDataURL(file);
+});
+$('foodForm').addEventListener('submit',e=>{
+ e.preventDefault();const item={id:Date.now()+Math.random(),name:$('foodName').value.trim(),cal:Number($('cal').value),protein:Number($('protein').value),carbs:Number($('carbs').value),fat:Number($('fat').value),meal:selectedMeal};
+ if(!item.name||Object.values(item).some(v=>typeof v==='number'&&(!Number.isFinite(v)||v<0)))return;
+ records[todayKey()]=[...todayRecords(),item];save();e.target.reset();photoData='';$('photoInput').value='';$('preview').removeAttribute('src');$('preview').style.display='none';
+});
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+render();
+</script>
+</body>
+</html>

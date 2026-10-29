@@ -1,0 +1,12 @@
+{
+  "name": "FuelTrack — Food Diary",
+  "short_name": "FuelTrack",
+  "description": "Track daily calories, protein, carbs and fat.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101116",
+  "theme_color": "#171321",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
